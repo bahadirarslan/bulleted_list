@@ -43,6 +43,11 @@ class BulletedList extends StatelessWidget {
   /// Optional. Specify shape of the default bullet. Circle is the default.
   final BoxShape boxShape;
 
+  /// Optional. Specify size of the default bullet. 10 is the default.
+  final double bulletSize;
+
+  /// Optional. Specify font style for the number in numbered bullet. [numberColor] is ignored if this is specified.
+  final TextStyle? numberFontStyle;
   const BulletedList({
     Key? key,
     required this.listItems,
@@ -54,13 +59,15 @@ class BulletedList extends StatelessWidget {
     this.bulletType = BulletType.conventional,
     this.numberColor = Colors.white,
     this.boxShape = BoxShape.circle,
+    this.bulletSize = 10,
+    this.numberFontStyle,
   }) : super(key: key);
 
   Widget _bullet(BuildContext context) {
     return bullet ??
         Container(
-          height: 10,
-          width: 10,
+          height: bulletSize,
+          width: bulletSize,
           decoration: new BoxDecoration(
             color: bulletColor,
             shape: boxShape,
@@ -75,7 +82,7 @@ class BulletedList extends StatelessWidget {
       if (number < 1) {
         return _bullet(context);
       }
-      final double boxSize = 10 + (1.0 * listItems.length);
+      final double boxSize = bulletSize + (1.0 * listItems.length);
       return Container(
         alignment: Alignment.center,
         height: boxSize,
@@ -86,8 +93,7 @@ class BulletedList extends StatelessWidget {
         ),
         child: Text(
           number.toString(),
-          style: TextStyles.body2.copyWith(
-              fontSize: 10, color: numberColor, fontWeight: FontWeight.bold),
+          style: numberFontStyle ?? TextStyles.body2.copyWith(fontSize: 10, color: numberColor, fontWeight: FontWeight.bold),
           textAlign: TextAlign.center,
         ),
       );
@@ -105,9 +111,7 @@ class BulletedList extends StatelessWidget {
               (item) => ListTile(
                   dense: true,
                   minLeadingWidth: 10,
-                  leading: bulletType == BulletType.conventional
-                      ? _bullet(context)
-                      : _numberedBullet(item),
+                  leading: bulletType == BulletType.conventional ? _bullet(context) : _numberedBullet(item),
                   title: item == null
                       ? Text(
                           '',
@@ -118,8 +122,7 @@ class BulletedList extends StatelessWidget {
                           : item is Widget
                               ? item
                               : Text(
-                                  'Error: Only Widget/String allowed:\n' +
-                                      item.toString(),
+                                  'Error: Only Widget/String allowed:\n' + item.toString(),
                                 )),
             )
             .toList(),
